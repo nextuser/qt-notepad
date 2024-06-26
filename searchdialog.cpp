@@ -50,6 +50,11 @@ SearchDialog::~SearchDialog()
     delete ui;
 }
 
+void SearchDialog::showResultMsg(QString str)
+{
+    ui->labelStatus->setText(str);
+}
+
 void SearchDialog::on_toolButtonShowReplace_toggled(bool checked)
 {
     showReplace(checked);
@@ -90,18 +95,12 @@ void SearchDialog::on_pushButtonFind_clicked()
         palette.setColor(QPalette::Highlight,palette.color(QPalette::Active,QPalette::Highlight));
         codeEditor->setPalette(palette);
     }
-
-
 }
-
-
-
-
 
 void SearchDialog::on_pushButtonReplace_clicked()
 {
     saveOptions();
-    codeEditor->replace(ui->lineEditSearch->text(),ui->lineEditReplace->text());
+    codeEditor->replace(ui->lineEditSearch->text(),ui->lineEditReplace->text(),this);
 
 }
 
@@ -109,6 +108,6 @@ void SearchDialog::on_pushButtonReplace_clicked()
 void SearchDialog::on_pushButtonReplaceAll_clicked()
 {
     saveOptions();
-    codeEditor->replaceAll(ui->lineEditSearch->text(),ui->lineEditReplace->text());
+    codeEditor->replaceAll(ui->lineEditSearch->text(),ui->lineEditReplace->text(),this);
 }
 

@@ -34,8 +34,9 @@ public:
     bool searchInEditor(QString text);
     void delete_current_line();
     void duplicate_line();
-    void replaceAll(QString findStr, QString replaceStr);
-    void replace(QString findStr,QString replaceStr);
+    void replaceAll(QString findStr, QString replaceStr,ShowResult *sr);
+    bool replaceCurrent(QString findStr,QString replaceStr);
+    void replace(QString findStr,QString replaceStr,ShowResult *sr);
     void selectCursor(int pos,int len);
     void selectCursor2(int pos,int len);
 protected:

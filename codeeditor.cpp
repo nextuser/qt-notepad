@@ -6,7 +6,7 @@
 #include <QTextCursor>
 #include <QTextDocumentFragment>
 #include <QMessageBox>
-
+#include <QInputDialog>
 #include "searchoptions.h"
 #include "searchdialog.h"
 
@@ -232,13 +232,12 @@ bool CodeEditor::searchInEditor(QString text)
     QTextDocument::FindFlags findFlags = getFindFlags();
     bool find = this->find(text,findFlags);
     QTextCursor cursor = this->textCursor();
-    int len = this->toPlainText().length();
     if(!find && searchOption.rewind){
-        if(searchOption.backward && len > 0){
-            cursor.setPosition(len -1 );
+        if(searchOption.backward ){
+            cursor.movePosition(QTextCursor::End);
         }
         else {
-            cursor.setPosition(0);
+            cursor.movePosition(QTextCursor::Start);
         }
         setTextCursor(cursor);
         find = this->find(text,findFlags);
@@ -292,15 +291,7 @@ void CodeEditor::findNext(ShowResult *sr)
         showFind();
     }
 }
-// void CodeEditor::textFind()
-// {
-//     QString text = this->textCursor().selectedText();
-//     if(!text.isEmpty()){
-//         this->searchOption.forward = true;
-//         searchInEditor(text);
-//     }
-// }
-#include <QInputDialog>
+
 void CodeEditor::showGoto(){
     bool ok = false;
     int ln = QInputDialog::getInt(this, "转到", "行号： ", 1, 1, this->document()->lineCount(), 1, &ok);//第一步
@@ -404,22 +395,17 @@ void CodeEditor::selectCursor2(int pos,int len)
 void CodeEditor::selectCursor(int pos,int len)
 {
     QTextCursor cursor = textCursor();
-    if(pos -len - 1 >= 0){
-        cursor.setPosition(pos - len -1 );
+    if(pos >= 0){
+        cursor.setPosition(pos);
         qDebug() << "select start:"  << cursor.selectionStart() << ",select end:" << cursor.selectionEnd() << "len=" << len;
         qDebug() << "anchor:"  << cursor.anchor() << ",position:" << cursor.position() << len;
         cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor,len);
 
         setTextCursor(cursor);
     }
-
-
-
-
-
 }
 
-void CodeEditor::replaceAll(QString findStr, QString replaceStr)
+void CodeEditor::replaceAll(QString findStr, QString replaceStr,ShowResult *sr)
 {
     QString text = findStr;
     if (text.isEmpty()) {
@@ -464,28 +450,42 @@ void CodeEditor::replaceAll(QString findStr, QString replaceStr)
         }
     }
     setTextCursor(start_cursor);
+    if(found > 0){
+        sr->showResultMsg(QString("全文替换`%1` => `%2` %3次").arg(findStr).arg(replaceStr).arg(found));
+    }
+    else{
+        sr->showResultMsg(QString("没有找到''").arg(findStr));
+    }
 }
 
-void CodeEditor::replace(QString findStr, QString replaceStr)
+bool CodeEditor::replaceCurrent(QString findStr,QString replaceStr)
 {
-    bool find = searchInEditor(findStr);
+    QTextCursor cursor = textCursor();
+    int pos = cursor.selectionStart();
 
-    ////ui->labelStatus->setText(msg);
-    if(find)
-    {
-        QTextCursor cursor = textCursor();
-        int pos = cursor.position();
-        cursor.beginEditBlock();
+    Qt::CaseSensitivity cs = searchOption.matchcase ? Qt::CaseInsensitive : Qt::CaseSensitive;
+    if (QString::compare(cursor.selectedText(), findStr, cs) == 0) {
         cursor.insertText(replaceStr);
-        cursor.endEditBlock();
         setTextCursor(cursor);
-
         selectCursor(pos,replaceStr.length());
-        QPalette palette = this->palette();
-        palette.setColor(QPalette::Highlight,palette.color(QPalette::Active,QPalette::Highlight));
-        setPalette(palette);
+
+        return true;
     }
+    return false;
+}
+
+void CodeEditor::replace(QString findStr, QString replaceStr,ShowResult *sr)
+{
+
+    bool replaced = replaceCurrent(findStr,replaceStr);
+    bool find = searchInEditor(findStr);
+    if(!replaced && find){
+        replaceCurrent(findStr,replaceStr);
+    }
+
     QString msg = find ? "" : getFindFailMsg();
+    sr->showResultMsg(msg);
+
 }
 
 
