@@ -404,10 +404,18 @@ void CodeEditor::selectCursor2(int pos,int len)
 void CodeEditor::selectCursor(int pos,int len)
 {
     QTextCursor cursor = textCursor();
-    cursor.setPosition(pos);
-    cursor.movePosition(QTextCursor::NoMove, QTextCursor::KeepAnchor,len);
-    cursor.select(QTextCursor::SelectionType::WordUnderCursor);
-    setTextCursor(cursor);
+    if(pos -len - 1 >= 0){
+        cursor.setPosition(pos - len -1 );
+        qDebug() << "select start:"  << cursor.selectionStart() << ",select end:" << cursor.selectionEnd() << "len=" << len;
+        qDebug() << "anchor:"  << cursor.anchor() << ",position:" << cursor.position() << len;
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor,len);
+
+        setTextCursor(cursor);
+    }
+
+
+
+
 
 }
 
