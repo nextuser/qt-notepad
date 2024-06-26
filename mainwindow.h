@@ -26,8 +26,11 @@ protected:
 public:
     MainWindow(QWidget *parent ,const QString& filePath);
     ~MainWindow();
-
-    virtual void openFile(const QString& aFileName) override;
+    // FileInterface
+    virtual void openFile(const QString& aFileName,bool bNewFile = false) override;
+    virtual void newFile() override;
+    virtual QString recentOpenDir() override;
+    //ShowResult interface
     void showResultMsg(QString msg) override;
 
 private slots:
@@ -55,13 +58,6 @@ private slots:
 
     void on_actionGo_to_triggered();
 
-    bool findActiveForm(TFormDoc *&doc);
-
-    void updateActionState();
-
-    void switchViewMode(bool isTabbed);
-
-    QPlainTextEdit * getActiveEdit();
 
     void on_actionTabbedView_triggered(bool checked);
 
@@ -81,6 +77,18 @@ private slots:
 
     void on_actionRedo_triggered();
 
+private :
+    void switchViewMode(bool isTabbed);
+
+
+    bool findActiveForm(TFormDoc *&doc);
+
+    void updateActionState();
+
+
+
+
+    QPlainTextEdit * getActiveEdit();
 public slots:
     virtual void on_undoAvailable(bool b) ;
     virtual void on_redoAvailable(bool b) ;
@@ -92,6 +100,7 @@ private:
     Ui::MainWindow *ui;
     QString recentPath;
     QString openPath;
+
     void loadSettings();
     void saveSettings();
 

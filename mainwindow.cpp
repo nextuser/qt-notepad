@@ -30,9 +30,12 @@ MainWindow::MainWindow(QWidget *parent,const QString& filePath)
     loadSettings();
     setCentralWidget(ui->mdiArea);
     switchViewMode(true);
-
-    if(!openPath.isEmpty()){
-        openFile(openPath);
+    QFileInfo fileInfo(openPath);
+    if(fileInfo.exists() && fileInfo.isFile()){
+        openFile(fileInfo.absoluteFilePath());
+    }
+    else{
+        newFile();
     }
 }
 
@@ -73,18 +76,15 @@ void MainWindow::updateActionState()
 
 }
 
-void MainWindow::openFile(const QString& aFileName)
+void MainWindow::openFile(const QString& aFileName,bool bNewFile)
 {
     if (aFileName.isEmpty())
         return;     //如果未选择文件，退出
 
-    TFormDoc    *formDoc =nullptr;
-
-    recentPath = QFileInfo(aFileName).absolutePath();
-
-    formDoc = createFormDoc();
+    if(!bNewFile) recentPath = QFileInfo(aFileName).absoluteFilePath();
+    TFormDoc    *formDoc = createFormDoc();
     ui->mdiArea->addSubWindow(formDoc);
-    formDoc->loadFromFile(aFileName);   //打开文件
+    formDoc->loadFromFile(aFileName,bNewFile);   //打开文件
     formDoc->show();
 
     updateActionState();
@@ -99,20 +99,32 @@ void MainWindow::on_actDoc_Open_triggered()
 //必须先获取当前MDI子窗口，再使用打开文件对话框，否则无法获得活动的子窗口
 
 
-    recentPath = recentPath.isEmpty()? QDir::currentPath():recentPath;
-    QString aFileName=QFileDialog::getOpenFileName(this,tr("打开一个文件"),recentPath,
+
+    QString aFileName=QFileDialog::getOpenFileName(this,tr("打开一个文件"),this->recentOpenDir(),
                                                      "所有文件(*.*);;C程序文件(*.h *cpp);;文本文件(*.txt)");
     openFile(aFileName);
 }
 
+#include <QTemporaryFile>
+#include "fileutil.h"
 
+void MainWindow::newFile(){
+    QString tempName = FileUtil::getNewFile(QDir::tempPath(), "未命名.txt");
+    QFile aFile(tempName);
+    aFile.open(QIODeviceBase::Text | QIODeviceBase::WriteOnly);
+    aFile.close();
+    openFile(aFile.fileName(),true);
+}
+
+QString MainWindow::recentOpenDir()
+{
+    return QFileInfo(this->recentPath).absolutePath();
+}
 void MainWindow::on_actDoc_New_triggered()
 { //新建文件
-    TFormDoc *formDoc = createFormDoc();
-    ui->mdiArea->addSubWindow(formDoc);     //文档窗口添加到MDI
-    formDoc->show();    //在单独的窗口中显示
 
-    updateActionState();
+    newFile();
+
 }
 
 void MainWindow::on_actCut_triggered()

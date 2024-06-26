@@ -7,6 +7,22 @@
 #include <QSaveFile>
 #include <QException>
 
+
+TFormDoc::TFormDoc(QWidget *parent,FileInterface * fi)
+    : QWidget(parent)
+    , ui(new Ui::TFormDoc)
+    , fileInterface(fi)
+{
+    ui->setupUi(this);
+    addTextArea(this->font(),fi);
+
+    this->setAttribute(Qt::WA_DeleteOnClose);   //关闭时自动删除
+
+    connect(codeEditor, &CodeEditor::modificationChanged,
+            this, &QWidget::setWindowModified);
+}
+
+
 void TFormDoc::addTextArea(const QFont &font,FileInterface *fi)
 {
     QVBoxLayout *verticalLayout = new QVBoxLayout(this);
@@ -21,28 +37,13 @@ void TFormDoc::addTextArea(const QFont &font,FileInterface *fi)
 
 
 }
-TFormDoc::TFormDoc(QWidget *parent,FileInterface * fi)
-    : QWidget(parent)
-    , ui(new Ui::TFormDoc)
-{
-    ui->setupUi(this);
-    addTextArea(this->font(),fi);
-
-    this->setAttribute(Qt::WA_DeleteOnClose);   //关闭时自动删除
-
-    connect(codeEditor, &CodeEditor::modificationChanged,
-            this, &QWidget::setWindowModified);
-
-
-
-}
 
 TFormDoc::~TFormDoc()
 {
     delete ui;
 }
 
-void TFormDoc::loadFromFile(const QString &aFileName)
+void TFormDoc::loadFromFile(const QString &aFileName,bool bNewFile)
 {//打开文件
     QFile aFile(aFileName);     //以文件方式读出
     if (aFile.open(QIODevice::ReadOnly | QIODevice::Text)) //以只读文本方式打开文件
@@ -57,7 +58,10 @@ void TFormDoc::loadFromFile(const QString &aFileName)
         QString str=fileInfo.fileName();    //去除路径后的文件名
         this->setWindowTitle(str+"[*]");
         m_fileOpened=true;
+
     }
+    this->m_isNewFile = bNewFile;
+
 }
 
 QString TFormDoc::currentFileName()
@@ -70,11 +74,21 @@ bool TFormDoc::isFileOpened()
     return m_fileOpened;
 }
 
+#include <QFileDialog>
 void TFormDoc::saveToFile(ShowResult *sr)
 {
-    QSaveFile   aFile(m_filename);
+    QString filePath(m_filename);
+    if(this->m_isNewFile){
+        filePath = QFileDialog::getSaveFileName(this,QString("input a new file name for '%1'").arg(this->windowTitle()),
+                                                fileInterface->recentOpenDir(),"*.*");
+    }
+
+    if(filePath.isEmpty()) return;
+
+    QSaveFile   aFile(filePath);
     if (!aFile.open(QIODevice::WriteOnly | QIODevice::Text))
         return ;
+
 
     aFile.setDirectWriteFallback(false);    //使用临时文件
     try
@@ -83,7 +97,9 @@ void TFormDoc::saveToFile(ShowResult *sr)
         QByteArray  strBytes=str.toUtf8();              //转换为字节数组, UTF-8编码
         aFile.write(strBytes,strBytes.length());        //写入文件
         aFile.commit();
+        this->setWindowTitle(QFileInfo(filePath).fileName());
         this->setWindowModified(false);
+        this->m_isNewFile = false;
         return;
     }
     catch (QException &e)

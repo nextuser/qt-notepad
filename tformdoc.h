@@ -26,13 +26,15 @@ private:
 
     QString m_filename;             //当前文件
     bool    m_fileOpened=false;     //文件已打开
+    bool    m_isNewFile;
     Highlighter *highlighter;
     //FileInterface * FileInterface;
     friend class MainWindow;
+    FileInterface * fileInterface;
 
 public:
 
-    void    loadFromFile(const QString& aFileName);   //打开文件
+    void    loadFromFile(const QString& aFileName,bool bNewFile);   //打开文件
     QString currentFileName();  //返回当前文件名
     bool    isFileOpened();     //文件已经打开
     void    saveToFile(ShowResult *sr);     //保存文件
