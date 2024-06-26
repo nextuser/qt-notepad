@@ -7,7 +7,9 @@ notepad developped by qt 6.2
 使用qt6.7 开发的文本编辑工具
 跨平台，可以用于window/mac
 
+#### 图形界面
 
+![image-20240626192708197](./README.assets/image-20240626192708197.png)
 
 #### 安装教程
 

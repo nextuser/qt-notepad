@@ -6,6 +6,10 @@ notepad developped by qt 6.2
 #### Software Architecture
 Software architecture description
 
+#### UI
+
+![image-20240626192737836](./README.en.assets/image-20240626192737836.png)
+
 #### Installation
 
 1.  xxxx
@@ -24,5 +28,4 @@ Software architecture description
 2.  Create Feat_xxx branch
 3.  Commit your code
 4.  Create Pull Request
-
 
