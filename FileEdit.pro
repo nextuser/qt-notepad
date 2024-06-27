@@ -19,7 +19,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     searchdialog.cpp \
-    tformdoc.cpp
+    tformdoc.cpp \
+    tsubwindow.cpp
 
 HEADERS += \
     ShowResult.h \
@@ -31,7 +32,8 @@ HEADERS += \
     mainwindow.h \
     searchdialog.h \
     searchoptions.h \
-    tformdoc.h
+    tformdoc.h \
+    tsubwindow.h
 
 FORMS += \
     mainwindow.ui \

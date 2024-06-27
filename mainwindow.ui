@@ -451,6 +451,22 @@
     <enum>QAction::NoRole</enum>
    </property>
   </action>
+  <action name="actionCloseTab">
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionClose_other_files">
+   <property name="text">
+    <string>Close other files</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

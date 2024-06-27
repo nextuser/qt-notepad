@@ -56,6 +56,7 @@ void TFormDoc::loadFromFile(const QString &aFileName,bool bNewFile)
         m_filename=aFileName;             //保存当前文件名
         QFileInfo   fileInfo(aFileName);    //文件信息
         QString str=fileInfo.fileName();    //去除路径后的文件名
+        this->setToolTip(fileInfo.absoluteFilePath());
         this->setWindowTitle(str+"[*]");
         m_fileOpened=true;
 
@@ -78,8 +79,10 @@ bool TFormDoc::isFileOpened()
 void TFormDoc::saveToFile(ShowResult *sr)
 {
     QString filePath(m_filename);
+    QString name = QFileInfo(filePath).fileName();
+
     if(this->m_isNewFile){
-        filePath = QFileDialog::getSaveFileName(this,QString("input a new file name for '%1'").arg(this->windowTitle()),
+        filePath = QFileDialog::getSaveFileName(this,QString("input a new file name for '%1'").arg(name),
                                                 fileInterface->recentOpenDir(),"*.*");
     }
 
@@ -97,7 +100,9 @@ void TFormDoc::saveToFile(ShowResult *sr)
         QByteArray  strBytes=str.toUtf8();              //转换为字节数组, UTF-8编码
         aFile.write(strBytes,strBytes.length());        //写入文件
         aFile.commit();
-        this->setWindowTitle(QFileInfo(filePath).fileName());
+        QFileInfo fileInfo(filePath);
+        this->setWindowTitle(fileInfo.fileName());
+        this->setToolTip(fileInfo.absoluteFilePath());
         this->setWindowModified(false);
         this->m_isNewFile = false;
         return;

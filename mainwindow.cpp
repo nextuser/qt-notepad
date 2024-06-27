@@ -8,6 +8,7 @@
 #include <QPlainTextEdit>
 #include <QInputDialog>
 #include <QSettings>
+#include "tsubwindow.h"
 TFormDoc * MainWindow::createFormDoc(){
     TFormDoc *doc = new TFormDoc(this,this);   //指定父窗口，必须在父窗口为Widget窗口提供一个显示区域;
     connect(doc->codeEditor,&CodeEditor::selectionChanged,this,&MainWindow::on_selectionChanged) ;
@@ -18,10 +19,14 @@ TFormDoc * MainWindow::createFormDoc(){
 }
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    ui->mdiArea->closeAllSubWindows();  //关闭所有子窗口
-    saveSettings();
-    event->accept();
+    ///ui->mdiArea->closeAllSubWindows();  //关闭所有子窗口
+    if(closeAllSubs()){
+        saveSettings();
+        event->accept();
+    }
 }
+
+
 MainWindow::MainWindow(QWidget *parent,const QString& filePath)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow),openPath(filePath)
@@ -83,7 +88,10 @@ void MainWindow::openFile(const QString& aFileName,bool bNewFile)
 
     if(!bNewFile) recentPath = QFileInfo(aFileName).absoluteFilePath();
     TFormDoc    *formDoc = createFormDoc();
-    ui->mdiArea->addSubWindow(formDoc);
+    TSubWindow *subWin = new TSubWindow(ui->mdiArea,this);
+    subWin->setWidget(formDoc);
+    ui->mdiArea->addSubWindow(subWin);
+
     formDoc->loadFromFile(aFileName,bNewFile);   //打开文件
     formDoc->show();
 
@@ -94,12 +102,20 @@ void MainWindow::showResultMsg(QString msg)
 {
     ui->statusBar->showMessage(msg);
 }
+
+
+
+QMenu *MainWindow::createTitleMenu(QWidget *target)
+{
+    QMenu *menu = new QMenu(target);
+    menu->addAction(ui->actionCloseTab);
+    menu->addAction(ui->actionClose_other_files);
+    menu->addAction(ui->actCloseALL);
+    return menu;
+}
 void MainWindow::on_actDoc_Open_triggered()
 {//打开文件
 //必须先获取当前MDI子窗口，再使用打开文件对话框，否则无法获得活动的子窗口
-
-
-
     QString aFileName=QFileDialog::getOpenFileName(this,tr("打开一个文件"),this->recentOpenDir(),
                                                      "所有文件(*.*);;C程序文件(*.h *cpp);;文本文件(*.txt)");
     openFile(aFileName);
@@ -185,11 +201,15 @@ void MainWindow::on_mdiArea_subWindowActivated(QMdiSubWindow *arg1)
 void MainWindow::switchViewMode(bool isTabbed)
 {
     //MDI 显示模式
-    if (isTabbed) //Tab多页显示模式
+    if (isTabbed) {//Tab多页显示模式
         ui->mdiArea->setViewMode(QMdiArea::TabbedView); //Tab多页显示模式
-    else //子窗口模式
+        ui->mdiArea->setTabsClosable(true);
+        ui->mdiArea->setTabsMovable(true);
+    }
+    else{ //子窗口模式
         ui->mdiArea->setViewMode(QMdiArea::SubWindowView); //子窗口模式
-    // ui->mdiArea->setTabsClosable(isTabbed);  //切换到多页模式下需重新设置
+    }
+    //   //切换到多页模式下需重新设置
     // ui->actCascade->setEnabled(!isTabbed);   //子窗口模式下才有用
     // ui->actTile->setEnabled(!isTabbed);
 
@@ -209,7 +229,14 @@ void MainWindow::on_actTile_triggered()
 
 void MainWindow::on_actCloseALL_triggered()
 {//关闭全部子窗口
-    ui->mdiArea->closeAllSubWindows();
+    closeAllSubs();
+}
+
+bool MainWindow::closeAllSubs(){
+    for(auto &w :ui->mdiArea->subWindowList()){
+        if(!closeSub(w)) return false;
+    }
+    return true;
 }
 
 
@@ -219,6 +246,7 @@ void MainWindow::on_actDoc_Save_triggered()
     TFormDoc *formDoc = nullptr;
     if(findActiveForm(formDoc)){
         formDoc->saveToFile(this);
+
     }
 }
 
@@ -370,6 +398,42 @@ void MainWindow::on_actionRedo_triggered()
     TFormDoc * doc;
     if(findActiveForm(doc)){
         doc->codeEditor->redo();
+    }
+}
+
+#include <QMessageBox>
+
+bool MainWindow:: closeSub(QMdiSubWindow * subWindow){
+    if(subWindow == nullptr ) return false;
+    TFormDoc *doc = (TFormDoc*)subWindow->widget();
+    if(doc->isWindowModified()){
+        auto ret = QMessageBox::question(this,"文件已经修改，正在关闭","是否需要保存?",QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+        if(ret == QMessageBox::StandardButton::Yes ){
+            doc->saveToFile(this);
+        }
+        else if(ret == QMessageBox::Cancel)
+        {
+            return false;
+        }
+
+    }
+    subWindow->close();
+    return true;
+}
+void MainWindow::on_actionCloseTab_triggered()
+{
+    QMdiSubWindow *activeWindow = ui->mdiArea->activeSubWindow();
+    closeSub(activeWindow);
+}
+
+
+void MainWindow::on_actionClose_other_files_triggered()
+{
+    QMdiSubWindow *activeWindow = ui->mdiArea->activeSubWindow();
+    for(auto &w :ui->mdiArea->subWindowList()){
+        if( w != activeWindow){
+            if(!closeSub(w)) return ;
+        }
     }
 }
 

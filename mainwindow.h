@@ -33,6 +33,8 @@ public:
     //ShowResult interface
     void showResultMsg(QString msg) override;
 
+    QMenu * createTitleMenu(QWidget* target);
+
 private slots:
     void on_actDoc_Open_triggered(); //打开文件
 
@@ -77,6 +79,10 @@ private slots:
 
     void on_actionRedo_triggered();
 
+    void on_actionCloseTab_triggered();
+
+    void on_actionClose_other_files_triggered();
+
 private :
     void switchViewMode(bool isTabbed);
 
@@ -84,6 +90,9 @@ private :
     bool findActiveForm(TFormDoc *&doc);
 
     void updateActionState();
+
+    bool closeAllSubs();
+    bool closeSub(QMdiSubWindow * subWindow);
 
 
 
@@ -100,6 +109,7 @@ private:
     Ui::MainWindow *ui;
     QString recentPath;
     QString openPath;
+
 
     void loadSettings();
     void saveSettings();

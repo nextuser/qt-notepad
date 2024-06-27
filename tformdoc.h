@@ -51,6 +51,9 @@ public:
     void    findNext(ShowResult *sr);
     void    findPrev(ShowResult *sr);
     QString selectedText();
+    QString  filePath() {
+        return m_filename;
+    }
     inline  CodeEditor * textEditor(){
         return codeEditor;
     }
