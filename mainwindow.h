@@ -5,9 +5,11 @@
 #include    <QMdiSubWindow>
 #include "fileinterface.h"
 #include "ShowResult.h"
+#include <QMessageBox>
 
 class QPlainTextEdit;
 class TFormDoc;
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -15,6 +17,8 @@ class MainWindow;
 }
 
 QT_END_NAMESPACE
+
+typedef QMessageBox::StandardButton SButton;
 
 class MainWindow : public QMainWindow,FileInterface,public ShowResult
 {
@@ -83,6 +87,8 @@ private slots:
 
     void on_actionClose_other_files_triggered();
 
+    void on_actionSave_as_triggered();
+
 private :
     void switchViewMode(bool isTabbed);
 
@@ -92,9 +98,8 @@ private :
     void updateActionState();
 
     bool closeAllSubs();
-    bool closeSub(QMdiSubWindow * subWindow);
 
-
+    QMessageBox::StandardButton closeSub(QMdiSubWindow * subWindow, QMessageBox::StandardButton inButton = QMessageBox::NoButton, bool batch = false);
 
 
     QPlainTextEdit * getActiveEdit();

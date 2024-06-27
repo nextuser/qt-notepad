@@ -50,6 +50,7 @@
    <addaction name="actDoc_New"/>
    <addaction name="actDoc_Open"/>
    <addaction name="actDoc_Save"/>
+   <addaction name="actionSave_as"/>
    <addaction name="actCloseALL"/>
    <addaction name="separator"/>
    <addaction name="actCut"/>
@@ -90,6 +91,7 @@
     <addaction name="actDoc_New"/>
     <addaction name="actDoc_Open"/>
     <addaction name="actDoc_Save"/>
+    <addaction name="actionSave_as"/>
     <addaction name="separator"/>
     <addaction name="actCloseALL"/>
     <addaction name="separator"/>
@@ -462,6 +464,21 @@
   <action name="actionClose_other_files">
    <property name="text">
     <string>Close other files</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/images/images/saveall1.bmp</normaloff>:/images/images/saveall1.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>另存为</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

@@ -76,14 +76,14 @@ bool TFormDoc::isFileOpened()
 }
 
 #include <QFileDialog>
-void TFormDoc::saveToFile(ShowResult *sr)
+void TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
 {
     QString filePath(m_filename);
     QString name = QFileInfo(filePath).fileName();
 
-    if(this->m_isNewFile){
+    if(this->m_isNewFile || needOtherName){
         filePath = QFileDialog::getSaveFileName(this,QString("input a new file name for '%1'").arg(name),
-                                                fileInterface->recentOpenDir(),"*.*");
+                                                fileInterface->recentOpenDir(),"*");
     }
 
     if(filePath.isEmpty()) return;
@@ -105,6 +105,7 @@ void TFormDoc::saveToFile(ShowResult *sr)
         this->setToolTip(fileInfo.absoluteFilePath());
         this->setWindowModified(false);
         this->m_isNewFile = false;
+        sr->showResultMsg(QString("保存成功：%1").arg(fileInfo.absoluteFilePath()));
         return;
     }
     catch (QException &e)

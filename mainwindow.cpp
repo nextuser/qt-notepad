@@ -9,6 +9,7 @@
 #include <QInputDialog>
 #include <QSettings>
 #include "tsubwindow.h"
+#include <QMessageBox>
 TFormDoc * MainWindow::createFormDoc(){
     TFormDoc *doc = new TFormDoc(this,this);   //指定父窗口，必须在父窗口为Widget窗口提供一个显示区域;
     connect(doc->codeEditor,&CodeEditor::selectionChanged,this,&MainWindow::on_selectionChanged) ;
@@ -24,6 +25,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
         saveSettings();
         event->accept();
     }
+    else{
+        event->ignore();
+    }
+
 }
 
 
@@ -233,8 +238,10 @@ void MainWindow::on_actCloseALL_triggered()
 }
 
 bool MainWindow::closeAllSubs(){
+    QMessageBox::StandardButton button = QMessageBox::StandardButton::NoButton;
     for(auto &w :ui->mdiArea->subWindowList()){
-        if(!closeSub(w)) return false;
+        button = closeSub(w,button,true);
+        if(button == QMessageBox::Cancel)  return false;
     }
     return true;
 }
@@ -401,24 +408,54 @@ void MainWindow::on_actionRedo_triggered()
     }
 }
 
-#include <QMessageBox>
 
-bool MainWindow:: closeSub(QMdiSubWindow * subWindow){
-    if(subWindow == nullptr ) return false;
+
+QMessageBox::StandardButton MainWindow:: closeSub(QMdiSubWindow * subWindow, QMessageBox::StandardButton inButton,bool batch){
+    if(subWindow == nullptr ) return inButton;
+
+
     TFormDoc *doc = (TFormDoc*)subWindow->widget();
-    if(doc->isWindowModified()){
-        auto ret = QMessageBox::question(this,"文件已经修改，正在关闭","是否需要保存?",QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
-        if(ret == QMessageBox::StandardButton::Yes ){
-            doc->saveToFile(this);
-        }
-        else if(ret == QMessageBox::Cancel)
-        {
-            return false;
-        }
 
+    if(!doc->isWindowModified()){
+        subWindow->close();
+        return inButton;
     }
-    subWindow->close();
-    return true;
+
+    if(inButton ==  QMessageBox::YesToAll){
+        doc->saveToFile(this);
+        subWindow->close();
+        return inButton;
+    }
+    else if(inButton == QMessageBox::NoToAll){
+        subWindow->close();
+        return inButton;
+    }
+    QMessageBox::StandardButtons buttons ;
+    if(!batch){
+        buttons =  QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel;
+    }
+    else{
+        buttons = QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel
+                  |QMessageBox::StandardButton::YesToAll | QMessageBox::StandardButton::NoToAll;
+    }
+
+    QMessageBox::StandardButton button = QMessageBox::question(this,"文件已经修改，正在关闭","是否需要保存?",
+                                  buttons );
+
+    if(button == QMessageBox::Cancel)
+    {
+        return button;
+    }
+    if(button == QMessageBox::Yes || button == QMessageBox::YesToAll){
+        doc->saveToFile(this);
+        subWindow->close();
+        return button;
+    }
+    if(button == QMessageBox::NoToAll || button == QMessageBox::No){
+        subWindow->close();
+        return button;
+    }
+    return inButton;
 }
 void MainWindow::on_actionCloseTab_triggered()
 {
@@ -430,10 +467,25 @@ void MainWindow::on_actionCloseTab_triggered()
 void MainWindow::on_actionClose_other_files_triggered()
 {
     QMdiSubWindow *activeWindow = ui->mdiArea->activeSubWindow();
+    QMessageBox::StandardButton button = QMessageBox::NoButton;
+    int count = ui->mdiArea->subWindowList().size() ;
+    bool leftMorethanOne = count - 1 > 1;
     for(auto &w :ui->mdiArea->subWindowList()){
         if( w != activeWindow){
-            if(!closeSub(w)) return ;
+            button = closeSub(w,button,leftMorethanOne);
+            if(button == QMessageBox::Cancel)
+                return ;
         }
+    }
+}
+
+
+void MainWindow::on_actionSave_as_triggered()
+{
+    TFormDoc *formDoc = nullptr;
+    if(findActiveForm(formDoc)){
+        formDoc->saveToFile(this,true);
+
     }
 }
 
