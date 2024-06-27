@@ -75,6 +75,15 @@ bool TFormDoc::isFileOpened()
     return m_fileOpened;
 }
 
+void TFormDoc::afterFileSaved(const QString& filePath,ShowResult *sr)
+{
+    QFileInfo fileInfo(filePath);
+    this->setWindowTitle(fileInfo.fileName());
+    this->setToolTip(fileInfo.absoluteFilePath());
+    this->setWindowModified(false);
+    this->m_isNewFile = false;
+     sr->showResultMsg(QString("保存成功：%1").arg(fileInfo.absoluteFilePath()));
+}
 #include <QFileDialog>
 void TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
 {
@@ -82,8 +91,16 @@ void TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
     QString name = QFileInfo(filePath).fileName();
 
     if(this->m_isNewFile || needOtherName){
-        filePath = QFileDialog::getSaveFileName(this,QString("input a new file name for '%1'").arg(name),
-                                                fileInterface->recentOpenDir(),"*");
+
+        filePath = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                           filePath,
+                                           tr("All files(*.*);;Text files (*.txt);;Xml files(*.xml *.xsd);;cpp files(*.c *.cc *.cpp *.h *.hpp)"));
+        /**
+        QFileDialog::saveFileContent(codeEditor->toPlainText().toUtf8(),this->m_filename,this);
+        afterFileSaved(this->m_filename,sr);
+        sr->showResultMsg(QString("保存成功：%1").arg(this->m_filename));
+        //saveFileContent 无法返回修改过的文件名字
+        return;**/
     }
 
     if(filePath.isEmpty()) return;
@@ -100,12 +117,7 @@ void TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
         QByteArray  strBytes=str.toUtf8();              //转换为字节数组, UTF-8编码
         aFile.write(strBytes,strBytes.length());        //写入文件
         aFile.commit();
-        QFileInfo fileInfo(filePath);
-        this->setWindowTitle(fileInfo.fileName());
-        this->setToolTip(fileInfo.absoluteFilePath());
-        this->setWindowModified(false);
-        this->m_isNewFile = false;
-        sr->showResultMsg(QString("保存成功：%1").arg(fileInfo.absoluteFilePath()));
+        afterFileSaved(filePath,sr);
         return;
     }
     catch (QException &e)

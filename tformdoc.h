@@ -22,8 +22,6 @@ private:
     Ui::TFormDoc *ui;
     CodeEditor   *codeEditor;
 
-    void addTextArea(const QFont &font,FileInterface *fi);
-
     QString m_filename;             //当前文件
     bool    m_fileOpened=false;     //文件已打开
     bool    m_isNewFile;
@@ -31,6 +29,10 @@ private:
     //FileInterface * FileInterface;
     friend class MainWindow;
     FileInterface * fileInterface;
+
+    void addTextArea(const QFont &font,FileInterface *fi);
+
+    void afterFileSaved(const QString& filePath,ShowResult *sr);
 
 public:
 

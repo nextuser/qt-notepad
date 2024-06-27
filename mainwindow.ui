@@ -51,6 +51,7 @@
    <addaction name="actDoc_Open"/>
    <addaction name="actDoc_Save"/>
    <addaction name="actionSave_as"/>
+   <addaction name="actionSave_All"/>
    <addaction name="actCloseALL"/>
    <addaction name="separator"/>
    <addaction name="actCut"/>
@@ -472,13 +473,25 @@
   <action name="actionSave_as">
    <property name="icon">
     <iconset resource="res.qrc">
-     <normaloff>:/images/images/saveall1.bmp</normaloff>:/images/images/saveall1.bmp</iconset>
+     <normaloff>:/images/images/save_as.png</normaloff>:/images/images/save_as.png</iconset>
    </property>
    <property name="text">
     <string>另存为</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionSave_All">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/images/images/saveall1.bmp</normaloff>:/images/images/saveall1.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Save All</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

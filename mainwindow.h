@@ -89,6 +89,8 @@ private slots:
 
     void on_actionSave_as_triggered();
 
+    void on_actionSave_All_triggered();
+
 private :
     void switchViewMode(bool isTabbed);
 

@@ -239,8 +239,10 @@ void MainWindow::on_actCloseALL_triggered()
 
 bool MainWindow::closeAllSubs(){
     QMessageBox::StandardButton button = QMessageBox::StandardButton::NoButton;
-    for(auto &w :ui->mdiArea->subWindowList()){
-        button = closeSub(w,button,true);
+    QList<QMdiSubWindow *> wList = ui->mdiArea->subWindowList();
+    bool bBatch = wList.size() > 1;
+    for(auto &w : wList){
+        button = closeSub(w,button,bBatch);
         if(button == QMessageBox::Cancel)  return false;
     }
     return true;
@@ -485,7 +487,14 @@ void MainWindow::on_actionSave_as_triggered()
     TFormDoc *formDoc = nullptr;
     if(findActiveForm(formDoc)){
         formDoc->saveToFile(this,true);
+    }
+}
 
+
+void MainWindow::on_actionSave_All_triggered()
+{
+   for(auto &w :ui->mdiArea->subWindowList()){
+        ((TFormDoc* )w->widget())->saveToFile(this);
     }
 }
 
