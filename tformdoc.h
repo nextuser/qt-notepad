@@ -3,8 +3,6 @@
 #include "highlighter.h"
 #include <QWidget>
 #include <codeeditor.h>
-#include "fileinterface.h"
-#include "ShowResult.h"
 
 namespace Ui {
 class TFormDoc;
@@ -28,14 +26,15 @@ private:
     Highlighter *highlighter;
     friend class MainWindow;
     void addTextArea(const QFont &font);
-    void afterFileSaved(const QString& filePath,ShowResult *sr);
-
+    void afterFileSaved(const QString& filePath);
+Q_SIGNALS:
+    void statusMessageChange(QString msg);
 public:
 
-    QString    loadFromFile(const QString& aFileName,bool bNewFile);   //打开文件
+    QString loadFromFile(const QString& aFileName,bool bNewFile);   //打开文件
     QString currentFileName();  //返回当前文件名
     bool    isFileOpened();     //文件已经打开
-    QString    saveToFile(ShowResult *sr,bool needOtherName = false);     //保存文件
+    QString saveToFile(bool needOtherName = false);     //保存文件
 
     void    setEditFont();      //设置字体
     void    textCut();          //cut
@@ -46,9 +45,9 @@ public:
     void    textFind();
     void    zoomIn();
     void    zoomOut();
-    void    findNext(ShowResult *sr);
-    void    findPrev(ShowResult *sr);
-    QString selectedText();
+    void    findNext();
+    void    findPrev();
+    QString  selectedText();
     QString  filePath() {
         return m_filename;
     }

@@ -11,8 +11,6 @@ SearchDialog::SearchDialog(CodeEditor *parent , bool bReplace)
     ui->toolButtonShowReplace->setDefaultAction(ui->actionactionShowReplace);
     showReplace(bReplace);
     loadOptions();
-
-
     ui->labelStatus->setText("");
 
     QPalette plt ;
@@ -100,14 +98,15 @@ void SearchDialog::on_pushButtonFind_clicked()
 void SearchDialog::on_pushButtonReplace_clicked()
 {
     saveOptions();
-    codeEditor->replace(ui->lineEditSearch->text(),ui->lineEditReplace->text(),this);
-
+    QString msg = codeEditor->replace(ui->lineEditSearch->text(),ui->lineEditReplace->text());
+    showResultMsg(msg);
 }
 
 
 void SearchDialog::on_pushButtonReplaceAll_clicked()
 {
     saveOptions();
-    codeEditor->replaceAll(ui->lineEditSearch->text(),ui->lineEditReplace->text(),this);
+    QString msg = codeEditor->replaceAll(ui->lineEditSearch->text(),ui->lineEditReplace->text());
+    showResultMsg(msg);
 }
 

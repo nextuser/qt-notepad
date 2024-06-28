@@ -106,7 +106,7 @@ void MainWindow::openFile(const QString& aFileName,bool bNewFile)
     updateActionState();
 }
 
-void MainWindow::showResultMsg(QString msg)
+void MainWindow::showStatusMsg(QString msg)
 {
     ui->statusBar->showMessage(msg);
 }
@@ -253,7 +253,7 @@ bool MainWindow::closeAllSubs(){
 
 void MainWindow::saveFile(TFormDoc *doc,bool otherName){
     QString oldPath = doc->filePath();
-    QString newPath = doc->saveToFile(this,otherName);
+    QString newPath = doc->saveToFile(otherName);
 
     if(m_recentFiles.changeFileName(oldPath,newPath)){
         updateRecentMenu();
@@ -388,7 +388,7 @@ void MainWindow::on_actionSearch_Next_triggered()
 
     TFormDoc * doc;
     if(findActiveForm(doc)){
-        doc->findNext(this);
+        doc->findNext();
     }
 }
 
@@ -397,7 +397,7 @@ void MainWindow::on_actionSearch_Previous_triggered()
 {
     TFormDoc * doc;
     if(findActiveForm(doc)){
-        doc->findPrev(this);
+        doc->findPrev();
     }
 }
 
@@ -541,7 +541,7 @@ void MainWindow::on_actionSave_as_triggered()
 void MainWindow::on_actionSave_All_triggered()
 {
    for(auto &w :ui->mdiArea->subWindowList()){
-        ((TFormDoc* )w->widget())->saveToFile(this);
+        ((TFormDoc* )w->widget())->saveToFile();
     }
 }
 

@@ -7,7 +7,6 @@
 #include <QPlainTextEdit>
 #include <QMargins>
 #include "searchoptions.h"
-#include "ShowResult.h"
 #include <QTextDocument>
 class CodeEditor : public QPlainTextEdit
 {
@@ -21,8 +20,8 @@ public:
     int lineNumberAreaWidth();
 
     bool searchInEditorOriginal(QString text);
-    void findNext(ShowResult *sr);
-    void findPrev(ShowResult *sr);
+    void findNext();
+    void findPrev();
     void textFind();
     void showGoto();
     void showFind();
@@ -33,9 +32,9 @@ public:
     bool searchInEditor(QString text);
     void delete_current_line();
     void duplicate_line();
-    void replaceAll(QString findStr, QString replaceStr,ShowResult *sr);
+    QString replaceAll(QString findStr, QString replaceStr);
     bool replaceCurrent(QString findStr,QString replaceStr);
-    void replace(QString findStr,QString replaceStr,ShowResult *sr);
+    QString replace(QString findStr,QString replaceStr);
     void selectCursor(int pos,int len);
     void selectCursor2(int pos,int len);
 protected:
@@ -60,6 +59,8 @@ protected:
 
 Q_SIGNALS:
     void dropFile(QString filePath);
+
+    void statusMessageChange(QString msg);
 };
 
 #endif // CODEEDITOR_H

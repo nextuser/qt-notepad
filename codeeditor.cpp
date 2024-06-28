@@ -263,14 +263,14 @@ void CodeEditor::showTextReplace()
     dlg.exec();
 }
 
-void CodeEditor::findPrev(ShowResult *sr)
+void CodeEditor::findPrev()
 {
     this->searchOption.backward = true;
     QString text = this->textCursor().selectedText();
 
     if(!text.isEmpty()){
         bool find = searchInEditor(text);
-        sr->showResultMsg(find ? "" : this->getFindFailMsg());
+        emit statusMessageChange(find ? "" : this->getFindFailMsg());
     }
     else{
         showFind();
@@ -278,7 +278,7 @@ void CodeEditor::findPrev(ShowResult *sr)
     }
 }
 
-void CodeEditor::findNext(ShowResult *sr)
+void CodeEditor::findNext()
 {
     this->searchOption.backward = false;
     QString text = this->textCursor().selectedText();
@@ -286,7 +286,7 @@ void CodeEditor::findNext(ShowResult *sr)
     if(!text.isEmpty()){
 
         bool find = searchInEditor(text);
-        sr->showResultMsg(find ? "" : this->getFindFailMsg());
+        emit statusMessageChange(find ? "" : this->getFindFailMsg());
     }
     else{
         showFind();
@@ -406,11 +406,11 @@ void CodeEditor::selectCursor(int pos,int len)
     }
 }
 
-void CodeEditor::replaceAll(QString findStr, QString replaceStr,ShowResult *sr)
+QString CodeEditor::replaceAll(QString findStr, QString replaceStr)
 {
     QString text = findStr;
     if (text.isEmpty()) {
-        return;
+        return text;
     }
 
     auto flags = getFindFlags();
@@ -432,11 +432,11 @@ void CodeEditor::replaceAll(QString findStr, QString replaceStr,ShowResult *sr)
     if (found) {
 
         if (QMessageBox::question(this, tr("Question"), tr("Replace %n instance(s)?", "", found), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
-            return;
+            return "";
         }
     } else {
         QMessageBox::information(this, tr("Sorry"), tr("Phrase not found."));
-        return;
+        return "";
     }
 
     // Replace instances
@@ -452,10 +452,10 @@ void CodeEditor::replaceAll(QString findStr, QString replaceStr,ShowResult *sr)
     }
     setTextCursor(start_cursor);
     if(found > 0){
-        sr->showResultMsg(QString("全文替换`%1` => `%2` %3次").arg(findStr).arg(replaceStr).arg(found));
+        return (QString("全文替换`%1` => `%2` %3次").arg(findStr).arg(replaceStr).arg(found));
     }
     else{
-        sr->showResultMsg(QString("没有找到''").arg(findStr));
+        return (QString("没有找到''").arg(findStr));
     }
 }
 
@@ -475,7 +475,7 @@ bool CodeEditor::replaceCurrent(QString findStr,QString replaceStr)
     return false;
 }
 
-void CodeEditor::replace(QString findStr, QString replaceStr,ShowResult *sr)
+QString CodeEditor::replace(QString findStr, QString replaceStr)
 {
 
     bool replaced = replaceCurrent(findStr,replaceStr);
@@ -485,7 +485,7 @@ void CodeEditor::replace(QString findStr, QString replaceStr,ShowResult *sr)
     }
 
     QString msg = find ? "" : getFindFailMsg();
-    sr->showResultMsg(msg);
+    return msg;
 
 }
 

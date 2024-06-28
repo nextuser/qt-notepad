@@ -497,7 +497,7 @@
     <string>保存所有文件</string>
    </property>
    <property name="toolTip">
-    <string>保存全部</string>
+    <string>保存所有文件</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

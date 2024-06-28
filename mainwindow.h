@@ -2,9 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include    <QMdiSubWindow>
-#include "fileinterface.h"
-#include "ShowResult.h"
+#include <QMdiSubWindow>
 #include <QMessageBox>
 #include "trecentfiles.h"
 
@@ -21,7 +19,7 @@ QT_END_NAMESPACE
 
 typedef QMessageBox::StandardButton SButton;
 
-class MainWindow : public QMainWindow,public ShowResult
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -36,7 +34,7 @@ public:
     virtual void newFile() ;
     virtual QString recentOpenDir() ;
     //ShowResult interface
-    void showResultMsg(QString msg) override;
+    void showStatusMsg(QString msg) ;
 
     QMenu * createTitleMenu(QWidget* target);
 

@@ -21,6 +21,7 @@ TFormDoc::TFormDoc(QWidget *parent)
     connect(codeEditor, &CodeEditor::modificationChanged,
             this, &QWidget::setWindowModified);
     connect(codeEditor,&CodeEditor::dropFile,(MainWindow*)parent,&MainWindow::on_editorDropFile);
+    connect(this,&TFormDoc::statusMessageChange, (MainWindow*)parent,&MainWindow::showStatusMsg);
 }
 
 
@@ -80,17 +81,17 @@ bool TFormDoc::isFileOpened()
     return m_fileOpened;
 }
 
-void TFormDoc::afterFileSaved(const QString& filePath,ShowResult *sr)
+void TFormDoc::afterFileSaved(const QString& filePath)
 {
     QFileInfo fileInfo(filePath);
     this->setWindowTitle(fileInfo.fileName());
     this->setToolTip(fileInfo.absoluteFilePath());
     this->setWindowModified(false);
     this->m_isNewFile = false;
-     sr->showResultMsg(QString("保存成功：%1").arg(fileInfo.absoluteFilePath()));
+    emit statusMessageChange(QString("保存成功：%1").arg(fileInfo.absoluteFilePath()));
 }
 #include <QFileDialog>
-QString TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
+QString TFormDoc::saveToFile(bool needOtherName )
 {
     QString filePath(m_filename);
     QString name = QFileInfo(filePath).fileName();
@@ -117,14 +118,14 @@ QString TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
         QByteArray  strBytes=str.toUtf8();              //转换为字节数组, UTF-8编码
         aFile.write(strBytes,strBytes.length());        //写入文件
         aFile.commit();
-        afterFileSaved(filePath,sr);
+        afterFileSaved(filePath);
         return m_filename;
     }
     catch (QException &e)
     {
         qDebug("保存文件的过程发生了错误");
         aFile.cancelWriting();      //出现异常时取消写入
-        sr->showResultMsg("保存文件的过程发生了错误");
+        emit statusMessageChange("保存文件的过程发生了错误");
         return "";
     }
 }
@@ -189,14 +190,14 @@ void TFormDoc::zoomOut()
     }
 }
 
-void TFormDoc::findNext(ShowResult * sr)
+void TFormDoc::findNext()
 {
-    codeEditor->findNext(sr);
+    codeEditor->findNext();
 }
 
-void TFormDoc::findPrev(ShowResult * sr)
+void TFormDoc::findPrev()
 {
-    codeEditor->findPrev(sr);
+    codeEditor->findPrev();
 }
 
 QString TFormDoc::selectedText()

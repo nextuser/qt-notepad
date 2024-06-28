@@ -24,7 +24,6 @@ SOURCES += \
     tsubwindow.cpp
 
 HEADERS += \
-    ShowResult.h \
     codeeditor.h \
     fileutil.h \
     highlighter.h \

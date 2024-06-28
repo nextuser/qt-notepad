@@ -4,20 +4,19 @@
 #include <QDialog>
 #include <QPlainTextEdit>
 #include "searchoptions.h"
-#include "ShowResult.h"
 class CodeEditor;
 namespace Ui {
 class SearchDialog;
 }
 
-class SearchDialog : public QDialog,public ShowResult
+class SearchDialog : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit SearchDialog(CodeEditor *parent , bool bReplace);
     ~SearchDialog();
-    virtual void showResultMsg(QString str) override;
+    virtual void showResultMsg(QString str) ;
 private slots:
     void on_toolButtonShowReplace_toggled(bool checked);
 
