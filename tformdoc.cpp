@@ -6,30 +6,31 @@
 #include <QFontDialog>
 #include <QSaveFile>
 #include <QException>
+#include <mainwindow.h>
 
-
-TFormDoc::TFormDoc(QWidget *parent,FileInterface * fi)
+TFormDoc::TFormDoc(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::TFormDoc)
-    , fileInterface(fi)
+
 {
     ui->setupUi(this);
-    addTextArea(this->font(),fi);
+    addTextArea(this->font());
 
     this->setAttribute(Qt::WA_DeleteOnClose);   //关闭时自动删除
 
     connect(codeEditor, &CodeEditor::modificationChanged,
             this, &QWidget::setWindowModified);
+    connect(codeEditor,&CodeEditor::dropFile,(MainWindow*)parent,&MainWindow::on_editorDropFile);
 }
 
 
-void TFormDoc::addTextArea(const QFont &font,FileInterface *fi)
+void TFormDoc::addTextArea(const QFont &font)
 {
     QVBoxLayout *verticalLayout = new QVBoxLayout(this);
     verticalLayout->setSpacing(0);
     verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     verticalLayout->setContentsMargins(0, 0, 0, 0);
-    codeEditor = new CodeEditor(this,fi);
+    codeEditor = new CodeEditor(this);
     codeEditor->setObjectName(QString::fromUtf8("CodeEditor"));
     codeEditor->setFont(font);
     highlighter = new Highlighter(codeEditor->document());

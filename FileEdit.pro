@@ -26,7 +26,6 @@ SOURCES += \
 HEADERS += \
     ShowResult.h \
     codeeditor.h \
-    fileinterface.h \
     fileutil.h \
     highlighter.h \
     linenumberarea.h \

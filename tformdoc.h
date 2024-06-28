@@ -15,7 +15,7 @@ class TFormDoc : public QWidget
     Q_OBJECT
 
 public:
-    explicit TFormDoc(QWidget *parent ,FileInterface * fi);
+    explicit TFormDoc(QWidget *parent );
     ~TFormDoc();
 
 private:
@@ -26,12 +26,8 @@ private:
     bool    m_fileOpened=false;     //文件已打开
     bool    m_isNewFile;
     Highlighter *highlighter;
-    //FileInterface * FileInterface;
     friend class MainWindow;
-    FileInterface * fileInterface;
-
-    void addTextArea(const QFont &font,FileInterface *fi);
-
+    void addTextArea(const QFont &font);
     void afterFileSaved(const QString& filePath,ShowResult *sr);
 
 public:

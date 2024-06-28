@@ -21,7 +21,7 @@ QT_END_NAMESPACE
 
 typedef QMessageBox::StandardButton SButton;
 
-class MainWindow : public QMainWindow,FileInterface,public ShowResult
+class MainWindow : public QMainWindow,public ShowResult
 {
     Q_OBJECT
 
@@ -32,9 +32,9 @@ public:
     MainWindow(QWidget *parent ,const QString& filePath);
     ~MainWindow();
     // FileInterface
-    virtual void openFile(const QString& aFileName,bool bNewFile = false) override;
-    virtual void newFile() override;
-    virtual QString recentOpenDir() override;
+    virtual void openFile(const QString& aFileName,bool bNewFile = false) ;
+    virtual void newFile() ;
+    virtual QString recentOpenDir() ;
     //ShowResult interface
     void showResultMsg(QString msg) override;
 
@@ -113,6 +113,8 @@ public slots:
     virtual void on_redoAvailable(bool b) ;
     virtual void on_copyAvailable(bool b) ;
     virtual void on_selectionChanged() ;
+
+    void on_editorDropFile(QString filePath);
 
 
 private:

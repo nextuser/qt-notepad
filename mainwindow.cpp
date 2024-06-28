@@ -11,7 +11,7 @@
 #include "tsubwindow.h"
 #include <QMessageBox>
 TFormDoc * MainWindow::createFormDoc(){
-    TFormDoc *doc = new TFormDoc(this,this);   //指定父窗口，必须在父窗口为Widget窗口提供一个显示区域;
+    TFormDoc *doc = new TFormDoc(this);   //指定父窗口，必须在父窗口为Widget窗口提供一个显示区域;
     connect(doc->codeEditor,&CodeEditor::selectionChanged,this,&MainWindow::on_selectionChanged) ;
     connect(doc->codeEditor,&CodeEditor::copyAvailable,this,&MainWindow::on_copyAvailable) ;
     connect(doc->codeEditor,&CodeEditor::undoAvailable,this,&MainWindow::on_undoAvailable) ;
@@ -431,6 +431,11 @@ void MainWindow::on_copyAvailable(bool b)
 void MainWindow::on_selectionChanged()
 {
     updateActionState();
+}
+
+void MainWindow::on_editorDropFile(QString filePath)
+{
+    this->openFile(filePath);
 }
 
 

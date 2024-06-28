@@ -6,7 +6,6 @@
 #include <QWidget>
 #include <QPlainTextEdit>
 #include <QMargins>
-#include "fileinterface.h"
 #include "searchoptions.h"
 #include "ShowResult.h"
 #include <QTextDocument>
@@ -15,7 +14,7 @@ class CodeEditor : public QPlainTextEdit
     Q_OBJECT
 
 public:
-    CodeEditor(QWidget *parent ,FileInterface *fi);
+    CodeEditor(QWidget *parent );
     ~CodeEditor();
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
@@ -52,12 +51,15 @@ private slots:
 private:
     QWidget *lineNumberArea;
     QMargins lnaMargins;//lineNumberArea margins
-    FileInterface *fileInterface;
     SearchOptions searchOption;
     friend class SearchDialog;
+
     // QWidget interface
 protected:
     void dropEvent(QDropEvent *event) override;
+
+Q_SIGNALS:
+    void dropFile(QString filePath);
 };
 
 #endif // CODEEDITOR_H

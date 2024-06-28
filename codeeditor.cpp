@@ -10,8 +10,8 @@
 #include "searchoptions.h"
 #include "searchdialog.h"
 
-CodeEditor::CodeEditor(QWidget *parent,FileInterface * fi)
-    : QPlainTextEdit(parent),fileInterface(fi)
+CodeEditor::CodeEditor(QWidget *parent)
+    : QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
 
@@ -69,7 +69,8 @@ void CodeEditor::dropEvent(QDropEvent *event)
     if(event->mimeData()->hasUrls()){
         for(QUrl &url: event->mimeData()->urls()){
             if(url.isLocalFile()){
-                fileInterface->openFile(url.toLocalFile());
+                ///fileInterface->openFile(url.toLocalFile());
+                emit CodeEditor::dropFile(url.toLocalFile());
             }
         }
     }
