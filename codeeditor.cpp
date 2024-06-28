@@ -270,7 +270,7 @@ void CodeEditor::findPrev()
 
     if(!text.isEmpty()){
         bool find = searchInEditor(text);
-        emit statusMessageChange(find ? "" : this->getFindFailMsg());
+        emit statusMessageChange(find ? "" : this->getFindFailMsg(text));
     }
     else{
         showFind();
@@ -286,7 +286,7 @@ void CodeEditor::findNext()
     if(!text.isEmpty()){
 
         bool find = searchInEditor(text);
-        emit statusMessageChange(find ? "" : this->getFindFailMsg());
+        emit statusMessageChange(find ? "" : this->getFindFailMsg(text));
     }
     else{
         showFind();
@@ -318,12 +318,12 @@ void CodeEditor::showGoto(){
     }
 }
 
-QString CodeEditor::getFindFailMsg()
+QString CodeEditor::getFindFailMsg(QString toFind)
 {
     QString ret;
     SearchOptions & options = searchOption;
     if(options.rewind){
-        ret = QString("文件中无法找到'%1'").arg(options.substr);
+        ret = QString("文件中无法找到'%1'").arg(toFind);
     }
     else{
         if(!options.backward){
@@ -484,7 +484,7 @@ QString CodeEditor::replace(QString findStr, QString replaceStr)
         replaceCurrent(findStr,replaceStr);
     }
 
-    QString msg = find ? "" : getFindFailMsg();
+    QString msg = find ? "" : getFindFailMsg(findStr);
     return msg;
 
 }

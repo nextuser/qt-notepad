@@ -82,9 +82,9 @@ void SearchDialog::on_pushButtonFind_clicked()
 {
 
     saveOptions();
-
-    bool find = codeEditor->searchInEditor(ui->lineEditSearch->text());
-    QString msg = find ? "" : codeEditor->getFindFailMsg();
+    QString toFind = ui->lineEditSearch->text();
+    bool find = codeEditor->searchInEditor(toFind);
+    QString msg = find ? "" : codeEditor->getFindFailMsg(toFind);
     ui->labelStatus->setText(msg);
     if(find)
     {

@@ -22,6 +22,7 @@ TFormDoc::TFormDoc(QWidget *parent)
             this, &QWidget::setWindowModified);
     connect(codeEditor,&CodeEditor::dropFile,(MainWindow*)parent,&MainWindow::on_editorDropFile);
     connect(this,&TFormDoc::statusMessageChange, (MainWindow*)parent,&MainWindow::showStatusMsg);
+    connect(codeEditor,&CodeEditor::statusMessageChange, (MainWindow*)parent,&MainWindow::showStatusMsg);
 }
 
 

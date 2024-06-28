@@ -27,7 +27,7 @@ public:
     void showFind();
     void showTextReplace();
 
-    QString getFindFailMsg();
+    QString getFindFailMsg(QString toFind);
     QTextDocument::FindFlags getFindFlags();
     bool searchInEditor(QString text);
     void delete_current_line();
