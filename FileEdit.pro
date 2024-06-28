@@ -20,6 +20,7 @@ SOURCES += \
     mainwindow.cpp \
     searchdialog.cpp \
     tformdoc.cpp \
+    trecentfiles.cpp \
     tsubwindow.cpp
 
 HEADERS += \
@@ -33,6 +34,7 @@ HEADERS += \
     searchdialog.h \
     searchoptions.h \
     tformdoc.h \
+    trecentfiles.h \
     tsubwindow.h
 
 FORMS += \

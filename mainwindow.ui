@@ -91,8 +91,11 @@
     </property>
     <addaction name="actDoc_New"/>
     <addaction name="actDoc_Open"/>
+    <addaction name="actionrecentfiles"/>
+    <addaction name="separator"/>
     <addaction name="actDoc_Save"/>
     <addaction name="actionSave_as"/>
+    <addaction name="actionSave_All"/>
     <addaction name="separator"/>
     <addaction name="actCloseALL"/>
     <addaction name="separator"/>
@@ -487,14 +490,22 @@
   </action>
   <action name="actionSave_All">
    <property name="icon">
-    <iconset resource="res.qrc">
+    <iconset theme="保存所有文件" resource="res.qrc">
      <normaloff>:/images/images/saveall1.bmp</normaloff>:/images/images/saveall1.bmp</iconset>
    </property>
    <property name="text">
-    <string>Save All</string>
+    <string>保存所有文件</string>
+   </property>
+   <property name="toolTip">
+    <string>保存全部</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionrecentfiles">
+   <property name="text">
+    <string>recentfiles</string>
    </property>
   </action>
  </widget>

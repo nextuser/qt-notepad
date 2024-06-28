@@ -6,6 +6,7 @@
 #include "fileinterface.h"
 #include "ShowResult.h"
 #include <QMessageBox>
+#include "trecentfiles.h"
 
 class QPlainTextEdit;
 class TFormDoc;
@@ -116,10 +117,11 @@ private:
     Ui::MainWindow *ui;
     QString recentPath;
     QString openPath;
-
+    TRecentFiles recentFiles;
 
     void loadSettings();
     void saveSettings();
+    void saveFile(TFormDoc *doc,bool otherName = false);
 
 };
 #endif // MAINWINDOW_H

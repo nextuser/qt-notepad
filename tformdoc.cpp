@@ -43,9 +43,11 @@ TFormDoc::~TFormDoc()
     delete ui;
 }
 
-void TFormDoc::loadFromFile(const QString &aFileName,bool bNewFile)
+
+QString TFormDoc::loadFromFile(const QString &aFileName,bool bNewFile)
 {//打开文件
     QFile aFile(aFileName);     //以文件方式读出
+    QString ret = "";
     if (aFile.open(QIODevice::ReadOnly | QIODevice::Text)) //以只读文本方式打开文件
     {
         QTextStream aStream(&aFile);    //用文本流读取文件
@@ -60,8 +62,10 @@ void TFormDoc::loadFromFile(const QString &aFileName,bool bNewFile)
         this->setWindowTitle(str+"[*]");
         m_fileOpened=true;
 
+        ret = m_filename;
     }
     this->m_isNewFile = bNewFile;
+    return ret;
 
 }
 
@@ -85,7 +89,7 @@ void TFormDoc::afterFileSaved(const QString& filePath,ShowResult *sr)
      sr->showResultMsg(QString("保存成功：%1").arg(fileInfo.absoluteFilePath()));
 }
 #include <QFileDialog>
-void TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
+QString TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
 {
     QString filePath(m_filename);
     QString name = QFileInfo(filePath).fileName();
@@ -95,19 +99,14 @@ void TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
         filePath = QFileDialog::getSaveFileName(this, tr("Save File"),
                                            filePath,
                                            tr("All files(*.*);;Text files (*.txt);;Xml files(*.xml *.xsd);;cpp files(*.c *.cc *.cpp *.h *.hpp)"));
-        /**
-        QFileDialog::saveFileContent(codeEditor->toPlainText().toUtf8(),this->m_filename,this);
-        afterFileSaved(this->m_filename,sr);
-        sr->showResultMsg(QString("保存成功：%1").arg(this->m_filename));
-        //saveFileContent 无法返回修改过的文件名字
-        return;**/
+
     }
 
-    if(filePath.isEmpty()) return;
+    if(filePath.isEmpty()) return "";
 
     QSaveFile   aFile(filePath);
     if (!aFile.open(QIODevice::WriteOnly | QIODevice::Text))
-        return ;
+        return "";
 
 
     aFile.setDirectWriteFallback(false);    //使用临时文件
@@ -118,14 +117,14 @@ void TFormDoc::saveToFile(ShowResult *sr,bool needOtherName )
         aFile.write(strBytes,strBytes.length());        //写入文件
         aFile.commit();
         afterFileSaved(filePath,sr);
-        return;
+        return m_filename;
     }
     catch (QException &e)
     {
         qDebug("保存文件的过程发生了错误");
         aFile.cancelWriting();      //出现异常时取消写入
         sr->showResultMsg("保存文件的过程发生了错误");
-        return ;
+        return "";
     }
 }
 

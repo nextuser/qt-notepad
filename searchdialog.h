@@ -21,8 +21,6 @@ public:
 private slots:
     void on_toolButtonShowReplace_toggled(bool checked);
 
-
-
     void on_pushButtonFind_clicked();
 
     void on_pushButtonReplace_clicked();

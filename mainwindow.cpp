@@ -28,7 +28,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     else{
         event->ignore();
     }
-
 }
 
 
@@ -97,7 +96,8 @@ void MainWindow::openFile(const QString& aFileName,bool bNewFile)
     subWin->setWidget(formDoc);
     ui->mdiArea->addSubWindow(subWin);
 
-    formDoc->loadFromFile(aFileName,bNewFile);   //打开文件
+    QString filePath = formDoc->loadFromFile(aFileName,bNewFile);   //打开文件
+    recentFiles.recordFileName(filePath);
     formDoc->show();
 
     updateActionState();
@@ -248,14 +248,24 @@ bool MainWindow::closeAllSubs(){
     return true;
 }
 
+void MainWindow::saveFile(TFormDoc *doc,bool otherName){
+    QString oldPath = doc->filePath();
+    QString newPath = doc->saveToFile(this,otherName);
+    if(oldPath == newPath ){
+        recentFiles.recordFileName(newPath);
+    }
+    else{
+        recentFiles.changeFileName(oldPath,newPath);
+    }
+
+}
 
 void MainWindow::on_actDoc_Save_triggered()
 {//保存
 
     TFormDoc *formDoc = nullptr;
     if(findActiveForm(formDoc)){
-        formDoc->saveToFile(this);
-
+        saveFile(formDoc);
     }
 }
 
@@ -424,7 +434,7 @@ QMessageBox::StandardButton MainWindow:: closeSub(QMdiSubWindow * subWindow, QMe
     }
 
     if(inButton ==  QMessageBox::YesToAll){
-        doc->saveToFile(this);
+        saveFile(doc);
         subWindow->close();
         return inButton;
     }
@@ -449,7 +459,7 @@ QMessageBox::StandardButton MainWindow:: closeSub(QMdiSubWindow * subWindow, QMe
         return button;
     }
     if(button == QMessageBox::Yes || button == QMessageBox::YesToAll){
-        doc->saveToFile(this);
+        saveFile(doc);
         subWindow->close();
         return button;
     }
@@ -486,7 +496,7 @@ void MainWindow::on_actionSave_as_triggered()
 {
     TFormDoc *formDoc = nullptr;
     if(findActiveForm(formDoc)){
-        formDoc->saveToFile(this,true);
+        saveFile(formDoc,true);
     }
 }
 

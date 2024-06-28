@@ -36,10 +36,10 @@ private:
 
 public:
 
-    void    loadFromFile(const QString& aFileName,bool bNewFile);   //打开文件
+    QString    loadFromFile(const QString& aFileName,bool bNewFile);   //打开文件
     QString currentFileName();  //返回当前文件名
     bool    isFileOpened();     //文件已经打开
-    void    saveToFile(ShowResult *sr,bool needOtherName = false);     //保存文件
+    QString    saveToFile(ShowResult *sr,bool needOtherName = false);     //保存文件
 
     void    setEditFont();      //设置字体
     void    textCut();          //cut
