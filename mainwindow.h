@@ -92,6 +92,8 @@ private slots:
 
     void on_actionSave_All_triggered();
 
+    void on_recentFileOpen(bool checked);
+
 private :
     void switchViewMode(bool isTabbed);
 
@@ -112,16 +114,19 @@ public slots:
     virtual void on_copyAvailable(bool b) ;
     virtual void on_selectionChanged() ;
 
+
 private:
     TFormDoc * createFormDoc();
     Ui::MainWindow *ui;
     QString recentPath;
     QString openPath;
-    TRecentFiles recentFiles;
+    TRecentFiles m_recentFiles;
 
     void loadSettings();
     void saveSettings();
     void saveFile(TFormDoc *doc,bool otherName = false);
+    void updateRecentMenu();
+
 
 };
 #endif // MAINWINDOW_H

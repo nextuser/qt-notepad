@@ -505,7 +505,10 @@
   </action>
   <action name="actionrecentfiles">
    <property name="text">
-    <string>recentfiles</string>
+    <string>最近文件</string>
+   </property>
+   <property name="toolTip">
+    <string>打开最近文件</string>
    </property>
   </action>
  </widget>

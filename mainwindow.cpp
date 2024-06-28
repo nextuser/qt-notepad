@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent,const QString& filePath)
     , ui(new Ui::MainWindow),openPath(filePath)
 {
     ui->setupUi(this);
+
     loadSettings();
     setCentralWidget(ui->mdiArea);
     switchViewMode(true);
@@ -97,7 +98,9 @@ void MainWindow::openFile(const QString& aFileName,bool bNewFile)
     ui->mdiArea->addSubWindow(subWin);
 
     QString filePath = formDoc->loadFromFile(aFileName,bNewFile);   //打开文件
-    recentFiles.recordFileName(filePath);
+    if(m_recentFiles.recordFileName(filePath)){
+        updateRecentMenu();
+    }
     formDoc->show();
 
     updateActionState();
@@ -251,13 +254,43 @@ bool MainWindow::closeAllSubs(){
 void MainWindow::saveFile(TFormDoc *doc,bool otherName){
     QString oldPath = doc->filePath();
     QString newPath = doc->saveToFile(this,otherName);
-    if(oldPath == newPath ){
-        recentFiles.recordFileName(newPath);
-    }
-    else{
-        recentFiles.changeFileName(oldPath,newPath);
+
+    if(m_recentFiles.changeFileName(oldPath,newPath)){
+        updateRecentMenu();
     }
 
+
+}
+
+void MainWindow::updateRecentMenu()
+{
+
+    QMenu *menu = new QMenu();
+    for(QString  path : this->m_recentFiles.recentFiles()){
+        QFileInfo info(path);
+        QAction *action = new QAction(info.fileName());
+        action->setData(path);
+        connect(action,&QAction::triggered,this,&MainWindow::on_recentFileOpen);
+        menu->addAction(action);
+    }
+    ui->actionrecentfiles->setMenu(menu);
+}
+
+void MainWindow::on_recentFileOpen(bool checked){
+    Q_UNUSED(checked);
+
+    QAction * action = (QAction*) (sender());
+    QString path = action->data().toString();
+
+    for(auto subWin : ui->mdiArea->subWindowList()){
+        QString openedPath = ((TFormDoc*)subWin->widget())->filePath();
+        if(openedPath == path){
+            subWin->activateWindow();
+            return;
+        }
+    }
+
+    this->openFile(path);
 }
 
 void MainWindow::on_actDoc_Save_triggered()
@@ -268,7 +301,6 @@ void MainWindow::on_actDoc_Save_triggered()
         saveFile(formDoc);
     }
 }
-
 
 QPlainTextEdit * MainWindow::getActiveEdit(){
     QMdiSubWindow * activeWindow = ui->mdiArea->activeSubWindow();
